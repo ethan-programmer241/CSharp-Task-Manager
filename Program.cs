@@ -15,11 +15,17 @@ else{
 // Display current tasks
 void DisplayList(){
     for (int i = 0; i < tasks.Count; i++){
-      Console.WriteLine($"Task {i + 1}.");
-      tasks[i].Display();
+      Console.WriteLine($"{i + 1}, {tasks[i].Name}");
     }
 }
 
+bool HasTasks() {
+  if (tasks.Count == 0) {
+    Console.WriteLine("You have no tasks yet.");
+    return false;
+  }
+  return true;
+}
 // Asks user to choose a task
 int GetTaskIndex(){
   while (true){
@@ -39,6 +45,15 @@ int GetTaskIndex(){
       }
     }
   }
+}
+
+void ViewTask() {
+  DisplayList();
+
+  Console.Write("What task would you like to view? ");
+  int taskIndex = GetTaskIndex(); 
+
+  tasks[taskIndex].Display();
 }
 
 // Adds a task to the task list
@@ -126,6 +141,7 @@ Priority GetPriority() {
   }
 }
 
+// Gets a due date from the user
 DateTime GetDueDate() {
   DateTime dueDate;
 
@@ -139,6 +155,21 @@ DateTime GetDueDate() {
 
     Console.WriteLine("Invalid date");
   }
+}
+
+List<Task> SearchTasks() {
+  Console.Write("What would you like to search for? ");
+  string taskToSearch = Console.ReadLine()!;
+
+  List<Task> result = new List<Task>();
+
+  for (int i = 0; i < tasks.Count; i++){
+    if (tasks[i].Name == taskToSearch) {
+      result.Add(tasks[i]);
+    }
+  }
+
+  return result;
 }
 // Main loop
 while (true){
@@ -180,22 +211,32 @@ while (true){
 
   // Performs the action chosen by the user
   if (userChoice == 1){
-    DisplayList();
+    if (HasTasks()) {
+      ViewTask();
+    }
   }
   else if (userChoice == 2){
     AddTask();
   }
   else if (userChoice == 3){
-    CompleteTask();
+    if (HasTasks()) {
+      CompleteTask();
+    }
   }
   else if (userChoice == 4){
-    ToggleCompletion();
+    if (HasTasks()) {
+      ToggleCompletion();
+    }
   }
   else if (userChoice == 5){
-    DeleteTask();
+    if (HasTasks()) {
+      DeleteTask();
+    }
   }
   else if (userChoice == 6){
-    ConfigureTask();
+    if (HasTasks()) {
+      ConfigureTask();
+    }
   }
   else if (userChoice == 7){
     string json = JsonSerializer.Serialize(tasks);
