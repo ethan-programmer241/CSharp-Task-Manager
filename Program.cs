@@ -2,14 +2,17 @@
 
 List<Task> tasks;
 
+// Check if existing tasks exist
 if (File.Exists("tasks.json")){
   string jsonFromFile = File.ReadAllText("tasks.json");
   tasks = JsonSerializer.Deserialize<List<Task>>(jsonFromFile) ?? new List<Task>();
 }
 else{
+  // Otherwise create new ones
   tasks = new List<Task>();
 }
 
+// Display current tasks
 void DisplayList(){
     for (int i = 0; i < tasks.Count; i++){
       Console.WriteLine($"Task {i + 1}.");
@@ -17,6 +20,7 @@ void DisplayList(){
     }
 }
 
+// Asks user to choose a task
 int GetTaskIndex(){
   while (true){
     string input = Console.ReadLine()!;
@@ -37,7 +41,108 @@ int GetTaskIndex(){
   }
 }
 
+// Adds a task to the task list
+void AddTask() {
+  Console.Write("Task name: ");
+  string newTaskName = Console.ReadLine()!;
+
+  Console.Write("Task description: ");
+  string newTaskDescription = Console.ReadLine()!;
+
+  Priority priority = GetPriority();
+  DateTime dueDate = GetDueDate();
+
+  Task newTask = new Task(newTaskName, newTaskDescription, false, priority, dueDate);
+
+  tasks.Add(newTask);
+}
+
+// Completes a task
+void CompleteTask() {
+  DisplayList();
+
+  Console.Write("Which task have you completed? ");
+  int taskIndex = GetTaskIndex(); 
+
+  tasks[taskIndex].Complete();
+}
+
+// Toggles a task's completion
+void ToggleCompletion() {
+  DisplayList();
+
+  Console.Write("Which task would you like to toggle the completion? ");
+  int taskIndex = GetTaskIndex();
+
+  tasks[taskIndex].ToggleComplete(); 
+}
+  
+// Deletes a task
+void DeleteTask() {
+  DisplayList();
+
+  Console.Write("Which task would you like to delete: ");
+  int taskIndex = GetTaskIndex();
+
+  tasks.RemoveAt(taskIndex);
+}
+
+// Configure a task
+void ConfigureTask() {
+  DisplayList();
+
+  Console.Write("Which task would you like to edit: ");
+  int taskIndex = GetTaskIndex();
+
+  Console.Write("New Task name: ");
+  string newTaskName = Console.ReadLine()!;
+
+  Console.Write("New Task description: ");
+  string newTaskDescription = Console.ReadLine()!;
+  
+  Priority newPriority = GetPriority();
+  DateTime dueDate = GetDueDate();
+
+  tasks[taskIndex].Name = newTaskName;
+  tasks[taskIndex].Description = newTaskDescription;
+  tasks[taskIndex].PriorityLevel = newPriority;
+  tasks[taskIndex].DueDate = dueDate;
+}
+
+// Gets a valid priority from the user
+Priority GetPriority() {
+  string newTaskPriority;
+  Priority priority;
+
+  // Keep asking until the user enters a valid priority
+  while (true){
+    Console.Write("How much priority: High, Medium, or Low? ");
+    newTaskPriority = Console.ReadLine()!;
+
+    if (Enum.TryParse<Priority>(newTaskPriority, true, out priority)){
+      return priority;
+    }
+    Console.WriteLine("Invalid Priority");
+  }
+}
+
+DateTime GetDueDate() {
+  DateTime dueDate;
+
+  while (true){
+    Console.Write("When do you want it to be due by? dd/MM/yyyy: ");
+    string userDueDate = Console.ReadLine()!;
+
+    if (DateTime.TryParse(userDueDate, out dueDate)){
+      return dueDate;
+    }
+
+    Console.WriteLine("Invalid date");
+  }
+}
+// Main loop
 while (true){
+  // Display options on what to do
   Console.WriteLine("====================");
   Console.WriteLine("     TASK MANAGER   ");
   Console.WriteLine("====================");
@@ -54,6 +159,7 @@ while (true){
 
   int userChoice;
 
+  // Asks user to select an action
   while (true){
     Console.Write("What would you like to do? ");
     string input = Console.ReadLine()!;
@@ -72,87 +178,24 @@ while (true){
   }
   Console.WriteLine();
 
+  // Performs the action chosen by the user
   if (userChoice == 1){
     DisplayList();
   }
   else if (userChoice == 2){
-    Console.Write("Task name: ");
-    string newTaskName = Console.ReadLine()!;
-
-    Console.Write("Task description: ");
-    string newTaskDescription = Console.ReadLine()!;
-
-    Priority priority;
-
-    while (true){
-      Console.Write("How much priority: High, Medium, or Low? ");
-      string newTaskPriority = Console.ReadLine()!;
-
-      if (Enum.TryParse<Priority>(newTaskPriority, true, out priority)){
-        break;
-      }
-
-      Console.WriteLine("Invalid Priority");
-    }
-
-    Task newTask = new Task(newTaskName, newTaskDescription, false, priority);
-
-    tasks.Add(newTask);
+    AddTask();
   }
   else if (userChoice == 3){
-    DisplayList();
-
-    Console.Write("Which task have you completed? ");
-    int taskIndex = GetTaskIndex(); 
-
-    tasks[taskIndex].Complete();
+    CompleteTask();
   }
   else if (userChoice == 4){
-    DisplayList();
-
-    Console.Write("Which task would you like to toggle the completion? ");
-    int taskIndex = GetTaskIndex();
-
-    tasks[taskIndex].ToggleComplete();
+    ToggleCompletion();
   }
   else if (userChoice == 5){
-    DisplayList();
-
-    Console.Write("Which task would you like to delete: ");
-    int taskIndex = GetTaskIndex();
-
-    tasks.RemoveAt(taskIndex);
+    DeleteTask();
   }
   else if (userChoice == 6){
-    DisplayList();
-
-    Console.Write("Which task would you like to edit: ");
-    int taskIndex = GetTaskIndex();
-
-    Console.Write("New Task name: ");
-    string newTaskName = Console.ReadLine()!;
-
-    Console.Write("New Task description: ");
-    string newTaskDescription = Console.ReadLine()!;
-
-    Priority priority;
-
-    string newTaskPriority;
-
-    while (true){
-      Console.Write("How much priority: High, Medium, or Low? ");
-      newTaskPriority = Console.ReadLine()!;
-
-      if (Enum.TryParse<Priority>(newTaskPriority, true, out priority)){
-        break;
-      }
-
-      Console.WriteLine("Invalid Priority");
-    }
-
-    tasks[taskIndex].Name = newTaskName;
-    tasks[taskIndex].Description = newTaskDescription;
-    tasks[taskIndex].PriorityLevel = priority;
+    ConfigureTask();
   }
   else if (userChoice == 7){
     string json = JsonSerializer.Serialize(tasks);
@@ -161,24 +204,28 @@ while (true){
   }
 }
 
+// Different priority levels
 enum Priority{
   Low,
   Medium,
   High
 }
 
+// What each task contains
 class Task
 {
   public string Name { get; set; }
   public string Description { get; set; } 
   public bool Completed { get; private set; } 
   public Priority PriorityLevel {get; set; }
+  public DateTime DueDate { get; set; }
 
-  public Task(string name, string description, bool completed, Priority priorityLevel){
+  public Task(string name, string description, bool completed, Priority priorityLevel, DateTime dueDate){
     Name = name;
     Description = description;
     Completed = completed;
-    PriorityLevel = priorityLevel;
+    PriorityLevel = priorityLevel; 
+    DueDate = dueDate;
   }
 
   public void Complete(){
@@ -203,6 +250,14 @@ class Task
     Console.WriteLine($"Description: {Description}");
     Console.WriteLine($"Completed: {Completed}");
     Console.WriteLine($"Priority: {PriorityLevel}");
+    if (DueDate == DateTime.Today && Completed == false) {
+      Console.WriteLine("DUE TODAY");
+    } else if (DueDate < DateTime.Today && Completed == false) {
+      Console.WriteLine("OVERDUE");
+    } else {
+      Console.WriteLine($"Due date: {DueDate:dd/MM/yyyy}");
+    }
+
     Console.WriteLine();
   }
 }
