@@ -13,9 +13,9 @@ else{
 }
 
 // Display current tasks
-void DisplayList(){
-    for (int i = 0; i < tasks.Count; i++){
-      Console.WriteLine($"{i + 1}, {tasks[i].Name}");
+void DisplayList(List<Task> taskList){
+    for (int i = 0; i < taskList.Count; i++){
+      Console.WriteLine($"{i + 1}. {taskList[i].Name}");
     }
 }
 
@@ -48,10 +48,11 @@ int GetTaskIndex(){
 }
 
 void ViewTask() {
-  DisplayList();
+  DisplayList(tasks);
 
   Console.Write("What task would you like to view? ");
   int taskIndex = GetTaskIndex(); 
+  Console.WriteLine();
 
   tasks[taskIndex].Display();
 }
@@ -74,7 +75,7 @@ void AddTask() {
 
 // Completes a task
 void CompleteTask() {
-  DisplayList();
+  DisplayList(tasks);
 
   Console.Write("Which task have you completed? ");
   int taskIndex = GetTaskIndex(); 
@@ -84,7 +85,7 @@ void CompleteTask() {
 
 // Toggles a task's completion
 void ToggleCompletion() {
-  DisplayList();
+  DisplayList(tasks);
 
   Console.Write("Which task would you like to toggle the completion? ");
   int taskIndex = GetTaskIndex();
@@ -94,7 +95,7 @@ void ToggleCompletion() {
   
 // Deletes a task
 void DeleteTask() {
-  DisplayList();
+  DisplayList(tasks);
 
   Console.Write("Which task would you like to delete: ");
   int taskIndex = GetTaskIndex();
@@ -104,7 +105,7 @@ void DeleteTask() {
 
 // Configure a task
 void ConfigureTask() {
-  DisplayList();
+  DisplayList(tasks);
 
   Console.Write("Which task would you like to edit: ");
   int taskIndex = GetTaskIndex();
@@ -164,12 +165,21 @@ List<Task> SearchTasks() {
   List<Task> result = new List<Task>();
 
   for (int i = 0; i < tasks.Count; i++){
-    if (tasks[i].Name == taskToSearch) {
+    if (tasks[i].Name.Contains(taskToSearch, StringComparison.OrdinalIgnoreCase)) {
       result.Add(tasks[i]);
     }
   }
-
   return result;
+}
+
+void SearchTaskMenu() {
+  List<Task> results = SearchTasks();
+
+  if (results.Count == 0) {
+    Console.WriteLine("Nothing found.");
+  } else {
+    DisplayList(results);
+  }
 }
 // Main loop
 while (true){
@@ -185,7 +195,8 @@ while (true){
   Console.WriteLine("4. Toggle Completion");
   Console.WriteLine("5. Delete Task");
   Console.WriteLine("6. Configure Task");
-  Console.WriteLine("7. Exit");
+  Console.WriteLine("7. Search For Task");
+  Console.WriteLine("8. Exit");
   Console.WriteLine();
 
   int userChoice;
@@ -196,7 +207,7 @@ while (true){
     string input = Console.ReadLine()!;
 
     if (int.TryParse(input, out userChoice)){
-      if (userChoice < 1 || userChoice > 7){
+      if (userChoice < 1 || userChoice > 8){
         Console.WriteLine("Please pick a valid option.");
       }
       else{
@@ -238,7 +249,12 @@ while (true){
       ConfigureTask();
     }
   }
-  else if (userChoice == 7){
+  else if (userChoice == 7) {
+    if (HasTasks()) {
+      SearchTaskMenu();
+    }
+  }
+  else if (userChoice == 8){
     string json = JsonSerializer.Serialize(tasks);
     File.WriteAllText("tasks.json", json);
     break;
