@@ -28,7 +28,7 @@ bool HasTasks() {
   return true;
 }
 // Asks user to choose a task
-int GetTaskIndex(List<Task> taskList){
+int GetTaskIndex(List<Task> taskList, bool allowBack = false){
   while (true){
     string input = Console.ReadLine()!;
 
@@ -36,13 +36,18 @@ int GetTaskIndex(List<Task> taskList){
       Console.WriteLine("Please choose a number.");
     }
     else{
-      taskNumber--;
+      if (!(allowBack || taskNumber == 0)) {
+        taskNumber--;
 
-      if (taskNumber < 0 || taskNumber >= taskList.Count){
-        Console.WriteLine("That task does not exist, please choose one that does.");
+        if (taskNumber < -1 || taskNumber >= taskList.Count){
+          Console.WriteLine("That task does not exist, please choose one that does.");
+        }
+        else{
+          return taskNumber;
+        }
       }
-      else{
-        return taskNumber;
+      else {
+        return -1;
       }
     }
   }
@@ -103,6 +108,7 @@ void ViewTask(List<Task> viewedTask) {
       return;
     } else {
       Console.WriteLine("That's not an option.");
+      Console.WriteLine();
       continue;
     }
   }
@@ -128,8 +134,12 @@ void AddTask() {
 void CompleteTask() {
   DisplayList(tasks);
 
-  Console.Write("Which task have you completed? ");
-  int taskIndex = GetTaskIndex(tasks); 
+  Console.Write("Which task would you like to complete or type 0 to go back: ");
+  int taskIndex = GetTaskIndex(tasks, true);
+
+  if (taskIndex == -1){
+    return;
+  }
 
   tasks[taskIndex].Complete();
 }
@@ -138,8 +148,12 @@ void CompleteTask() {
 void ToggleCompletion() {
   DisplayList(tasks);
 
-  Console.Write("Which task would you like to toggle the completion? ");
-  int taskIndex = GetTaskIndex(tasks);
+  Console.Write("Which task would you like to toggle completion or type 0 to go back: ");
+  int taskIndex = GetTaskIndex(tasks, true);
+
+  if (taskIndex == -1){
+    return;
+  }
 
   tasks[taskIndex].ToggleComplete(); 
 }
@@ -148,8 +162,12 @@ void ToggleCompletion() {
 void DeleteTask() {
   DisplayList(tasks);
 
-  Console.Write("Which task would you like to delete: ");
-  int taskIndex = GetTaskIndex(tasks);
+  Console.Write("Which task would you like to delete or type 0 to go back: ");
+  int taskIndex = GetTaskIndex(tasks, true);
+
+  if (taskIndex == -1){
+    return;
+  }
 
   tasks.RemoveAt(taskIndex);
 }
@@ -158,8 +176,12 @@ void DeleteTask() {
 void ConfigureTask() {
   DisplayList(tasks);
 
-  Console.Write("Which task would you like to edit: ");
-  int taskIndex = GetTaskIndex(tasks);
+  Console.Write("Which task would you like to edit or type 0 to go back: ");
+  int taskIndex = GetTaskIndex(tasks, true);
+
+  if (taskIndex == -1){
+    return;
+  }
 
   Console.Write("New Task name: ");
   string newTaskName = Console.ReadLine()!;
