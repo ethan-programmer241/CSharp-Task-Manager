@@ -48,13 +48,53 @@ int GetTaskIndex(){
 }
 
 void ViewTask() {
-  DisplayList(tasks);
+  while (true) {
+    DisplayList(tasks);
+    Console.WriteLine();
 
-  Console.Write("What task would you like to view? ");
-  int taskIndex = GetTaskIndex(); 
-  Console.WriteLine();
+    Console.Write("What task would you like to view? ");
+    int taskIndex = GetTaskIndex(); 
+    Console.WriteLine();
 
-  tasks[taskIndex].Display();
+    // Display options on what to do
+    Console.WriteLine("====================");
+    Console.WriteLine($"     {tasks[taskIndex].Name}   ");
+    Console.WriteLine("====================");
+    Console.WriteLine();
+
+    Console.WriteLine($"Description: {tasks[taskIndex].Description}");
+    Console.WriteLine($"Completion: {tasks[taskIndex].Completed}");
+    Console.WriteLine($"Priority: {tasks[taskIndex].PriorityLevel}");
+    Console.WriteLine($"Due date: {tasks[taskIndex].DueDate: dd/MM/yyyy}");
+    Console.WriteLine();
+
+    Console.WriteLine("1. View another task");
+    Console.WriteLine("0. Go back");
+    Console.WriteLine();
+
+    Console.Write("What would you like to do? ");
+
+    int choice;
+
+    while (true) {
+      string userInput = Console.ReadLine()!;
+      Console.WriteLine();
+
+      if (!int.TryParse(userInput, out choice)) {
+        Console.WriteLine("Please pick a valid choice.");
+      }
+      else {
+        break;
+      }
+    }
+
+    if (choice == 1) {
+      continue;
+    }
+    else if (choice == 0) {
+      return;
+    }
+  }
 }
 
 // Adds a task to the task list
@@ -196,7 +236,7 @@ while (true){
   Console.WriteLine("5. Delete Task");
   Console.WriteLine("6. Configure Task");
   Console.WriteLine("7. Search For Task");
-  Console.WriteLine("8. Exit");
+  Console.WriteLine("0. Exit");
   Console.WriteLine();
 
   int userChoice;
@@ -207,7 +247,7 @@ while (true){
     string input = Console.ReadLine()!;
 
     if (int.TryParse(input, out userChoice)){
-      if (userChoice < 1 || userChoice > 8){
+      if (userChoice < 0 || userChoice > 7){
         Console.WriteLine("Please pick a valid option.");
       }
       else{
@@ -254,7 +294,7 @@ while (true){
       SearchTaskMenu();
     }
   }
-  else if (userChoice == 8){
+  else if (userChoice == 0){
     string json = JsonSerializer.Serialize(tasks);
     File.WriteAllText("tasks.json", json);
     break;
@@ -307,6 +347,7 @@ class Task
     Console.WriteLine($"Description: {Description}");
     Console.WriteLine($"Completed: {Completed}");
     Console.WriteLine($"Priority: {PriorityLevel}");
+
     if (DueDate == DateTime.Today && Completed == false) {
       Console.WriteLine("DUE TODAY");
     } else if (DueDate < DateTime.Today && Completed == false) {
