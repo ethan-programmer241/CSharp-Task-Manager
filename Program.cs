@@ -370,32 +370,6 @@ class Task
   }
 
   public void ToggleComplete(){
-    /*if (Completed == false)
-    {
-      Completed = true;
-    }
-    else
-    {
-      Completed = false;
-    } */
-
     Completed = !Completed;
-  }
-
-  public void Display(){
-    Console.WriteLine($"Name: {Name}");
-    Console.WriteLine($"Description: {Description}");
-    Console.WriteLine($"Completed: {Completed}");
-    Console.WriteLine($"Priority: {PriorityLevel}");
-
-    if (DueDate == DateTime.Today && Completed == false) {
-      Console.WriteLine("DUE TODAY");
-    } else if (DueDate < DateTime.Today && Completed == false) {
-      Console.WriteLine("OVERDUE");
-    } else {
-      Console.WriteLine($"Due date: {DueDate:dd/MM/yyyy}");
-    }
-
-    Console.WriteLine();
   }
 }
