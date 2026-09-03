@@ -95,9 +95,9 @@ void ViewTask(List<Task> viewedTask) {
     }
     else if (choice == 0) {
       return;
-    } eles {
+    } else {
       Console.WriteLine("That's not an option.")
-        continue;
+      continue;
     }
   }
 }
