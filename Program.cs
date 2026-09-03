@@ -67,7 +67,13 @@ void ViewTask(List<Task> viewedTask) {
     Console.WriteLine($"Description: {viewedTask[taskIndex].Description}");
     Console.WriteLine($"Completion: {viewedTask[taskIndex].Completed}");
     Console.WriteLine($"Priority: {viewedTask[taskIndex].PriorityLevel}");
-    Console.WriteLine($"Due date: {viewedTask[taskIndex].DueDate: dd/MM/yyyy}");
+    if (viewedTask[taskIndex].DueDate == DateTime.Today && viewedTask[taskIndex].Completed == false) {
+      Console.WriteLine("DUE TODAY");
+    } else if (viewedTask[taskIndex].DueDate < DateTime.Today && viewedTask[taskIndex].Completed == false) {
+      Console.WriteLine("OVERDUE");
+    } else {
+      Console.WriteLine($"Due date: {viewedTask[taskIndex].DueDate:dd/MM/yyyy}");
+    }
     Console.WriteLine();
 
     Console.WriteLine("1. View another task");
@@ -96,7 +102,7 @@ void ViewTask(List<Task> viewedTask) {
     else if (choice == 0) {
       return;
     } else {
-      Console.WriteLine("That's not an option.")
+      Console.WriteLine("That's not an option.");
       continue;
     }
   }
@@ -218,14 +224,40 @@ List<Task> SearchTasks() {
 }
 
 void SearchTaskMenu() {
-  List<Task> results = SearchTasks();
+  while (true) {
+    List<Task> results = SearchTasks();
 
-  if (results.Count == 0) {
-    Console.WriteLine("Nothing found.");
-  }
-  else {
-    Console.WriteLine();
-    ViewTask(results);
+    if (results.Count == 0) {
+      Console.WriteLine("Nothing found.");
+    }
+    else {
+      Console.WriteLine();
+      ViewTask(results);
+    }
+    Console.WriteLine("1. Continue searching");
+    Console.WriteLine("0. Go back");
+    Console.Write("What would you like to do: ");
+
+    
+    while (true) {
+      string choice = Console.ReadLine()!;
+
+      if (int.TryParse(choice, out int chosenNumber)) {
+        if (chosenNumber == 0) {
+          return;
+        }
+        else if (chosenNumber == 1) {
+          break;
+        }
+        else {
+          Console.WriteLine("Not an option.");
+          continue;
+        }
+      }
+      else {
+        Console.WriteLine("Please choose a number.");
+      }
+    }
   }
 }
 
