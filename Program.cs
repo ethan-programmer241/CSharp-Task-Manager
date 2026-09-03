@@ -19,6 +19,7 @@ void DisplayList(List<Task> taskList){
     }
 }
 
+// Checks if the user has any tasks
 bool HasTasks() {
   if (tasks.Count == 0) {
     Console.WriteLine("You have no tasks yet.");
@@ -27,7 +28,7 @@ bool HasTasks() {
   return true;
 }
 // Asks user to choose a task
-int GetTaskIndex(){
+int GetTaskIndex(List<Task> taskList){
   while (true){
     string input = Console.ReadLine()!;
 
@@ -37,7 +38,7 @@ int GetTaskIndex(){
     else{
       taskNumber--;
 
-      if (taskNumber < 0 || taskNumber >= tasks.Count){
+      if (taskNumber < 0 || taskNumber >= taskList.Count){
         Console.WriteLine("That task does not exist, please choose one that does.");
       }
       else{
@@ -47,25 +48,26 @@ int GetTaskIndex(){
   }
 }
 
-void ViewTask() {
+// Displays task details
+void ViewTask(List<Task> viewedTask) {
   while (true) {
-    DisplayList(tasks);
+    DisplayList(viewedTask);
     Console.WriteLine();
 
     Console.Write("What task would you like to view? ");
-    int taskIndex = GetTaskIndex(); 
+    int taskIndex = GetTaskIndex(viewedTask); 
     Console.WriteLine();
 
-    // Display options on what to do
+    // Display task details
     Console.WriteLine("====================");
-    Console.WriteLine($"     {tasks[taskIndex].Name}   ");
+    Console.WriteLine($"     {viewedTask[taskIndex].Name}   ");
     Console.WriteLine("====================");
     Console.WriteLine();
 
-    Console.WriteLine($"Description: {tasks[taskIndex].Description}");
-    Console.WriteLine($"Completion: {tasks[taskIndex].Completed}");
-    Console.WriteLine($"Priority: {tasks[taskIndex].PriorityLevel}");
-    Console.WriteLine($"Due date: {tasks[taskIndex].DueDate: dd/MM/yyyy}");
+    Console.WriteLine($"Description: {viewedTask[taskIndex].Description}");
+    Console.WriteLine($"Completion: {viewedTask[taskIndex].Completed}");
+    Console.WriteLine($"Priority: {viewedTask[taskIndex].PriorityLevel}");
+    Console.WriteLine($"Due date: {viewedTask[taskIndex].DueDate: dd/MM/yyyy}");
     Console.WriteLine();
 
     Console.WriteLine("1. View another task");
@@ -93,6 +95,9 @@ void ViewTask() {
     }
     else if (choice == 0) {
       return;
+    } eles {
+      Console.WriteLine("That's not an option.")
+        continue;
     }
   }
 }
@@ -118,7 +123,7 @@ void CompleteTask() {
   DisplayList(tasks);
 
   Console.Write("Which task have you completed? ");
-  int taskIndex = GetTaskIndex(); 
+  int taskIndex = GetTaskIndex(tasks); 
 
   tasks[taskIndex].Complete();
 }
@@ -128,7 +133,7 @@ void ToggleCompletion() {
   DisplayList(tasks);
 
   Console.Write("Which task would you like to toggle the completion? ");
-  int taskIndex = GetTaskIndex();
+  int taskIndex = GetTaskIndex(tasks);
 
   tasks[taskIndex].ToggleComplete(); 
 }
@@ -138,7 +143,7 @@ void DeleteTask() {
   DisplayList(tasks);
 
   Console.Write("Which task would you like to delete: ");
-  int taskIndex = GetTaskIndex();
+  int taskIndex = GetTaskIndex(tasks);
 
   tasks.RemoveAt(taskIndex);
 }
@@ -148,7 +153,7 @@ void ConfigureTask() {
   DisplayList(tasks);
 
   Console.Write("Which task would you like to edit: ");
-  int taskIndex = GetTaskIndex();
+  int taskIndex = GetTaskIndex(tasks);
 
   Console.Write("New Task name: ");
   string newTaskName = Console.ReadLine()!;
@@ -217,10 +222,13 @@ void SearchTaskMenu() {
 
   if (results.Count == 0) {
     Console.WriteLine("Nothing found.");
-  } else {
-    DisplayList(results);
+  }
+  else {
+    Console.WriteLine();
+    ViewTask(results);
   }
 }
+
 // Main loop
 while (true){
   // Display options on what to do
@@ -263,7 +271,7 @@ while (true){
   // Performs the action chosen by the user
   if (userChoice == 1){
     if (HasTasks()) {
-      ViewTask();
+      ViewTask(tasks);
     }
   }
   else if (userChoice == 2){
